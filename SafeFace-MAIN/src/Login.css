@@ -1,0 +1,88 @@
+/* Full page background */
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #eef5ff, #f7fbff);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Card */
+.auth-card {
+  background: #ffffff;
+  width: 380px;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+/* Title */
+.auth-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #0b2545;
+}
+
+/* Subtitle */
+.auth-subtitle {
+  margin: 8px 0 24px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* Inputs & dropdown */
+.auth-card input,
+.auth-card select {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+  outline: none;
+  background: #ffffff;
+}
+
+.auth-card input:focus,
+.auth-card select:focus {
+  border-color: #2563eb;
+}
+
+/* Login button */
+.auth-button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 10px;
+  border-radius: 999px;
+  border: none;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.auth-button:hover {
+  background: #1d4ed8;
+}
+
+/* Footer text */
+.auth-footer {
+  margin-top: 16px;
+  font-size: 14px;
+  color: #374151;
+}
+
+/* Register link */
+.auth-footer span {
+  color: #2563eb;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.auth-footer span:hover {
+  text-decoration: underline;
+}
