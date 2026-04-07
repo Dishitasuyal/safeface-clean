@@ -1,11 +1,17 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import { Shield, Scan, Brain, Scale, Users, Upload, Cpu, FileSearch, Gavel, Eye } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
-import { Disclaimer } from "@/components/Disclaimer";
+import { Navbar } from "../components/Navbar";
+import { Footer } from "../components/Footer";
+import { Disclaimer } from "../components/Disclaimer";
+import { LucideIcon } from "lucide-react";
 
-const features = [
+const features: {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+}[] = [
+
   {
     icon: Scan,
     title: "Deepfake Detection",
@@ -28,7 +34,11 @@ const features = [
   },
 ];
 
-const steps = [
+const steps: {
+  icon: LucideIcon;
+  label: string;
+  description: string;
+}[] = [
   { icon: Upload, label: "Upload Media", description: "Select an image or video file" },
   { icon: Cpu, label: "AI Analysis", description: "Our models analyze the content" },
   { icon: FileSearch, label: "View Results", description: "Get detailed authenticity report" },
@@ -64,9 +74,12 @@ export const Dashboard = () => {
             
             <div className="mt-10">
               
-              <Button asChild size="lg" className="text-lg px-8">
-                <Link to="/detect">Start Detection</Link>
-              </Button>
+             <Link
+  to="/detect"
+  className="inline-block text-lg px-8 py-3 bg-primary text-white rounded-md hover:bg-primary/90"
+>
+  Start Detection
+</Link>
             </div>
           </div>
         </div>
@@ -87,7 +100,7 @@ export const Dashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feature, index) => (
               <div
-                key={index}
+                key={`feature-${index}`}
                 className="group rounded-xl border border-border bg-card p-6 shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1"
               >
                 <div className="mb-4 inline-flex rounded-lg bg-primary/10 p-3">

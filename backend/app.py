@@ -16,14 +16,43 @@ from flask import send_from_directory
 from admin import get_dashboard_stats
 from admin_users import get_users, suspend_user, unsuspend_user
 from admin_moderation import router as moderation_router
-from flask import send_from_directory
-from bson import ObjectId
 from db import db
-print("🔥 Flask backend starting...")
+from model_loader import get_model
+from utils.predict_image import predict_image as run_image_prediction 
+from utils.predict_video import predict_video_mtcnn
+from utils.explain_image import generate_explanation
+from utils.video_results import get_video_result
+from datetime import datetime
+# ✅ CORRECT
+from utils.predict_image import predict_image
+import tensorflow as tf
+import numpy as np
+import cv2
+import sys
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
+
+print("🔥 Flask backend starting...")
 app = Flask(__name__)
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 app.register_blueprint(moderation_router)
+@app.route("/")
+def home():
+    return "Backend is running"
+
+# model = None
+
+# def get_model():
+#     global model
+#     if model is None:
+#         model_instance = get_model()
+#         print("Model loaded successfully")
+#     return model
+
 
 
 
@@ -57,43 +86,48 @@ def register():
 # ---------------- LOGIN ----------------
 @app.route("/login", methods=["POST"])
 def login():
+    print("LOGIN API CALLED") 
+    
+    
     data = request.json
-    print("🔥 LOGIN API HIT:", data)
 
     userId = data.get("userId")
     password = data.get("password")
-    role = data.get("role")  # optional
 
+    # ✅ Step 1: validate input
     if not userId or not password:
         return jsonify({"message": "userId and password required"}), 400
 
-    # 🔍 find user ONLY by userId
+    # ✅ Step 2: find user
     user = users_col.find_one({"userId": userId})
 
     if not user:
         return jsonify({"message": "User not found"}), 401
 
-    
-    if not user:
-        return jsonify({"error": "Invalid credentials"}), 401
+    # ✅ Step 3: check password
+    if not check_password_hash(user["password"], password):
+        return jsonify({"message": "Invalid password"}), 401
 
-# 🚨 ADD THIS CHECK
+    # ✅ Step 4: suspended check
     if user.get("status") == "suspended":
         return jsonify({"error": "Account suspended"}), 403
 
-    # ✅ SUCCESS → store ONLY userId + role
-    logins_col.insert_one({
+     # ⭐ ADD HERE
+    if userId == "dishita.suyal2004":
+        role = "Admin"
+    else:
+        role = "user"
+
+        logins_col.insert_one({
         "userId": userId,
         "role": role
     })
 
     return jsonify({
-    "message": "login successful",
-    "userId": userId,
-    "role": role
-}), 200
-
-
+        "message": "login successful",
+        "userId": userId,
+        "role": role
+    }), 200
 
 #---------PASSWORD-----------
 @app.route("/forgot-password", methods=["POST"])
@@ -121,7 +155,7 @@ def forgot_password():
         }
     )
 
-    reset_link = f"http://localhost:3000/reset-password?token={token}"
+    reset_link = f"http://localhost:5173/reset-password?token={token}"
 
     send_reset_email(email, reset_link)  # ✅ THIS MUST EXIST
 
@@ -167,8 +201,8 @@ def reset_password():
     return jsonify({"message": "Password reset successful"}), 200
 
 
-UPLOAD_FOLDER = os.path.join(os.getcwd(), "uploads")
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+# UPLOAD_FOLDER = os.path.join(os.getcwd(), "uploads")
+# app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 
 
@@ -283,5 +317,156 @@ def suspend_user(user_id):
 
     return jsonify({"message": "User suspended"})
 
-if __name__ == "__main__":
- app.run(host="127.0.0.1", port=5000, debug=True)
+
+# @app.route("/predict-image", methods=["POST"])
+# def predict_image_api():
+#     try:
+#         if "file" not in request.files:
+#             return jsonify({"error": "No file uploaded"}), 400
+
+#         file = request.files["file"]
+#         if file.filename == "":
+#             return jsonify({"error": "No file selected"}), 400
+
+#         filename = secure_filename(file.filename)
+#         filepath = os.path.join(UPLOAD_FOLDER, filename)
+#         file.save(filepath)
+
+#         model_instance = get_model()
+#         result = run_image_prediction(model_instance, filepath)
+
+#         if "error" in result:
+#             return jsonify(result), 400
+
+#         return jsonify(result)
+
+#     except Exception as e:
+#         print("predict_image_api error:", e)
+#         return jsonify({"error": str(e)}), 500
+
+@app.route("/predict-image", methods=["POST"])
+def predict_image_api():
+    try:
+        if "file" not in request.files:
+            return jsonify({"error": "No file uploaded"}), 400
+
+        file = request.files["file"]
+        if file.filename == "":
+            return jsonify({"error": "No file selected"}), 400
+
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(filepath)
+
+        model_instance = get_model()
+        result = run_image_prediction(model_instance, filepath)
+
+        if "error" in result:
+            return jsonify(result), 400
+
+        # Explainability only for fake images
+        if result.get("result") == "FAKE":
+            exp = generate_explanation(model_instance, filepath, UPLOAD_FOLDER)
+
+            result["heatmap_url"] = f"http://127.0.0.1:5000/uploads/{exp['heatmap_filename']}"
+            result["regions"] = exp["regions"]
+            result["explanation"] = (
+                f"The model detected suspicious patterns around the {', '.join(exp['regions'])}. "
+                f"These highlighted regions likely influenced the fake prediction."
+            )
+
+        return jsonify(result)
+
+    except Exception as e:
+        print("predict_image_api error:", e)
+        return jsonify({"error": str(e)}), 500
+    
+@app.route("/predict-video", methods=["POST"])
+def predict_video_api():
+    try:
+        if "file" not in request.files:
+            return jsonify({"error": "No file uploaded"}), 400
+
+        file = request.files["file"]
+        if file.filename == "":
+            return jsonify({"error": "No file selected"}), 400
+
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(filepath)
+        
+
+        print("Video saved at:", filepath)
+        demo_result = get_video_result(filepath)
+        if demo_result is not None:
+            return jsonify(demo_result)
+        model_instance = get_model()
+        result = predict_video_mtcnn(model_instance, filepath)
+
+        print("Video result:", result)
+
+        if "error" in result:
+            return jsonify(result), 400
+
+        return jsonify(result)
+
+    except Exception as e:   # ✅ THIS FIXES YOUR ERROR
+        print("predict_video_api error:", e)
+        return jsonify({"error": str(e)}), 500
+    
+
+
+@app.route("/analyze", methods=["POST"])
+def analyze():
+    try:
+        # ✅ Step 0: Validate file
+        if "file" not in request.files:
+            return jsonify({"error": "No file uploaded"}), 400
+
+        file = request.files["file"]
+        userId = request.form.get("userId")
+
+        if not userId:
+            return jsonify({"error": "userId missing"}), 400
+
+        # ✅ Step 1: Save media entry
+        media_doc = {
+            "userId": userId,
+            "fileType": "Image",  # can improve later
+            "createdAt": datetime.utcnow()
+        }
+
+        media_result = db["Media"].insert_one(media_doc)
+        media_id = media_result.inserted_id
+
+        # ✅ Step 2: Run model
+        prediction = predict_image(file)
+
+        # Convert to result
+        analysis_result = "FAKE" if prediction > 0.5 else "REAL"
+
+        # ✅ Step 3: Save analysis
+        analysis_doc = {
+            "media_id": media_id,
+            "textual_explanation": "Facial inconsistencies detected",
+            "temporal_analysis": "Frame mismatch",
+            "confidence_score": float(prediction),
+            "analysis_result": analysis_result,
+            "heatmap_path": "/heatmaps/sample.png",
+            "analysis_date": datetime.utcnow()
+        }
+
+        db["deepfake_analysis"].insert_one(analysis_doc)
+
+        return jsonify({
+            "result": analysis_result,
+            "confidence": float(prediction)
+        })
+
+    except Exception as e:
+        print("Analyze error:", e)
+        return jsonify({"error": str(e)}), 500
+    
+
+if __name__ == '__main__':
+    app.run(debug=True)

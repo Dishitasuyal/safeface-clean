@@ -1,16 +1,19 @@
 import { useState, useRef, DragEvent, ChangeEvent } from "react";
 import { Upload, FileVideo, Image as ImageIcon, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 interface UploadBoxProps {
   onFileSelect: (file: File | null) => void;
-  onUrlSubmit: (url: string) => void;
+  onAnalyzeResult: (data: any) => void;
   selectedFile: File | null;
   isDisabled?: boolean;
 }
 
-export const UploadBox = ({ onFileSelect, onUrlSubmit, selectedFile, isDisabled }: UploadBoxProps) => {
+export const UploadBox = ({
+  onFileSelect,
+  onAnalyzeResult,   // ✅ ADD THIS
+  selectedFile,
+  isDisabled
+}: UploadBoxProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [mediaUrl, setMediaUrl] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -39,6 +42,7 @@ export const UploadBox = ({ onFileSelect, onUrlSubmit, selectedFile, isDisabled 
     const files = e.target.files;
     if (files && files.length > 0) {
       onFileSelect(files[0]);
+      handleUpload(files[0]);
     }
   };
 
@@ -53,12 +57,30 @@ export const UploadBox = ({ onFileSelect, onUrlSubmit, selectedFile, isDisabled 
     }
   };
 
-  const handleUrlSubmit = () => {
-    if (mediaUrl.trim()) {
-      onUrlSubmit(mediaUrl.trim());
-      setMediaUrl("");
-    }
-  };
+
+  const handleUpload = async (file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("userId", localStorage.getItem("userId") || "");
+
+  try {
+    const res = await fetch("http://127.0.0.1:5000/analyze", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+    console.log("Backend result:", data);
+
+    onAnalyzeResult(data);
+       
+    // ❌ REMOVE THIS PART
+    // onFileSelect({ ... });
+
+  } catch (err) {
+    console.error(err);
+  }
+};
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6">
@@ -98,18 +120,16 @@ export const UploadBox = ({ onFileSelect, onUrlSubmit, selectedFile, isDisabled 
                 {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
               </p>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleClearFile();
-              }}
-              className="text-destructive hover:text-destructive"
-            >
-              <X className="h-4 w-4 mr-1" />
-              Remove
-            </Button>
+            <button
+  onClick={(e) => {
+    e.stopPropagation();
+    handleClearFile();
+  }}
+  className="text-destructive hover:text-destructive flex items-center gap-1"
+>
+  <X className="h-4 w-4" />
+  Remove
+</button>
           </div>
         ) : (
           <div className="flex flex-col items-center gap-4">

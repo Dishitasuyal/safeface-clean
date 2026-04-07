@@ -11,4 +11,4 @@ db = client["safefaceDB"]
 users_col = db["users"]
 logins_col = db["logins"]
 community_col = db["community_posts"]
-
+media_col = db["Media"]                 

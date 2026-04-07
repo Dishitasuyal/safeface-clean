@@ -2,8 +2,10 @@ import { Target, FileText, CheckCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import StatCard from "@/components/admin/StatCard";
+import { useNavigate } from "react-router-dom";
 
 const AdminDashboard = () => {
+const navigate = useNavigate();
 
   const [stats, setStats] = useState({
     totalUsers: 0,
@@ -12,11 +14,28 @@ const AdminDashboard = () => {
   });
 
 useEffect(() => {
+  const role = localStorage.getItem("role");
+  const userId = localStorage.getItem("userId");
+
+  // 🔐 Not logged in
+  if (!userId) {
+    navigate("/login");
+    return;
+  }
+
+  // 🔐 Not admin
+  if (role !== "Admin") {
+    navigate("/dashboard");
+    return;
+  }
+
+  // ✅ If admin → fetch data
   fetch("http://localhost:5000/admin/stats")
     .then(res => res.json())
     .then(data => setStats(data))
     .catch(err => console.error(err));
-}, []);
+
+}, [navigate]);
   return (
     <AdminLayout>
       <div className="space-y-8">

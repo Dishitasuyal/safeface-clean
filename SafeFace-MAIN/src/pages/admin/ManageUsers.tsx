@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import AdminLayout from "@/components/admin/AdminLayout";
-import { Button } from "@/components/ui/button";
+import AdminLayout from "../../components/admin/AdminLayout";
+import { Button } from "../../components/ui/button";
 import {
   Table,
   TableBody,
@@ -8,8 +8,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { useToast } from "@/hooks/use-toast";
+} from "../../components/ui/table";
+import { useToast } from "../../hooks/use-toast";
 
 type User = {
   userId: string;

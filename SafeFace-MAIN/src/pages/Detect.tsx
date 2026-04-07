@@ -1,55 +1,34 @@
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
-import { UploadBox } from "@/components/UploadBox";
-import { AnalysisResult } from "@/components/AnalysisResult";
-import { Disclaimer } from "@/components/Disclaimer";
+import { Button } from "../components/ui/button";
+import { Navbar } from "../components/Navbar";
+import { Footer } from "../components/Footer";
+import { UploadBox } from "../components/UploadBox";
+import AnalysisResult from "../components/AnalysisResult";
+import { Disclaimer } from "../components/Disclaimer";
+
 
 type AnalysisState = "idle" | "processing" | "complete";
+// interface MockResult {
+//   score: number;
+//   result: "manipulated" | "authentic" | "uncertain";
+//   explanation: string;
+//   confidenceLevel: "high" | "medium" | "low";
+// }
 
 interface MockResult {
   score: number;
   result: "manipulated" | "authentic" | "uncertain";
   explanation: string;
   confidenceLevel: "high" | "medium" | "low";
+  heatmapUrl?: string;
 }
 
 // Mock analysis function - simulates AI processing
-const performMockAnalysis = (): Promise<MockResult> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // Random result for demonstration
-      const scenarios: MockResult[] = [
-        {
-          score: 87,
-          result: "manipulated",
-          explanation: "Facial texture inconsistencies detected across multiple frames. The analysis identified unnatural blending artifacts around the facial boundaries and temporal discontinuities in lip movements that suggest digital manipulation.",
-          confidenceLevel: "high",
-        },
-        {
-          score: 92,
-          result: "manipulated",
-          explanation: "High probability of face-swap manipulation detected. Key indicators include mismatched lighting conditions on the face compared to the background and subtle distortions in the ear region.",
-          confidenceLevel: "high",
-        },
-        {
-          score: 15,
-          result: "authentic",
-          explanation: "No significant manipulation indicators found. The media appears to be authentic based on facial consistency analysis, temporal coherence checks, and artifact detection.",
-          confidenceLevel: "high",
-        },
-      ];
-      
-      const randomResult = scenarios[Math.floor(Math.random() * scenarios.length)];
-      resolve(randomResult);
-    }, 3000); // 3 second simulated processing time
-  });
-};
-
+     
 export const Detect = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [result, setResult] = useState(null);
   const [analysisState, setAnalysisState] = useState<AnalysisState>("idle");
   const [analysisResult, setAnalysisResult] = useState<MockResult | null>(null);
 
@@ -59,34 +38,81 @@ export const Detect = () => {
     setAnalysisResult(null);
   };
 
+
+
   const handleUrlSubmit = (url: string) => {
     // For mock purposes, treat URL submission same as file
     console.log("URL submitted:", url);
     setAnalysisState("idle");
     setAnalysisResult(null);
   };
+const handleAnalyze = async () => {
+  if (!selectedFile) return;
 
-  const handleAnalyze = async () => {
-    if (!selectedFile) return;
-    
-    setAnalysisState("processing");
-    
-    try {
-      const result = await performMockAnalysis();
-      setAnalysisResult(result);
-      setAnalysisState("complete");
-    } catch (error) {
-      console.error("Analysis failed:", error);
+  setAnalysisState("processing");
+
+  try {
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    const isVideo = selectedFile.type.startsWith("video/");
+    const endpoint = isVideo
+      ? "http://127.0.0.1:5000/predict-video"
+      : "http://127.0.0.1:5000/predict-image";
+
+    const res = await fetch(endpoint, {
+      method: "POST",
+      body: formData,
+    });
+    console.log("Response Status:", res.status);
+    const data = await res.json();
+    console.log("Backend result:", data);
+
+    if (!res.ok || data.error) {
+      console.error("Backend error:", data.error || "Unknown error");
       setAnalysisState("idle");
+      return;
     }
+
+    let confidence = Number(data.confidence);
+    if (isNaN(confidence)) confidence = 0;
+
+    confidence = Math.max(0, Math.min(100, confidence));
+
+
+    const mappedResult: MockResult = {
+  score: confidence,
+  result: data.result === "FAKE" ? "manipulated" : "authentic",
+  explanation:
+    data.result === "FAKE"
+      ? (data.explanation || "The model found suspicious facial regions in this image.")
+      : "Media appears authentic.",
+  confidenceLevel:
+    confidence >= 80
+      ? "high"
+      : confidence >= 60
+        ? "medium"
+        : "low",
+  heatmapUrl: data.result === "FAKE" ? data.heatmap_url : undefined,
   };
 
-  const handleReset = () => {
-    setSelectedFile(null);
+    setAnalysisResult(mappedResult);
+    setAnalysisState("complete");
+  } catch (error) {
+    console.error("Analysis failed:", error);
     setAnalysisState("idle");
-    setAnalysisResult(null);
-  };
+  }
+};
 
+// 🔴 FIX 1: make sure confidence is valid number
+
+const handleReset = () => {
+  setSelectedFile(null);
+  setAnalysisState("idle");
+  setAnalysisResult(null);
+};
+
+    
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
@@ -110,10 +136,10 @@ export const Detect = () => {
           {analysisState === "idle" && (
             <div className="space-y-8">
               <UploadBox
-                onFileSelect={handleFileSelect}
-                onUrlSubmit={handleUrlSubmit}
-                selectedFile={selectedFile}
-              />
+  onFileSelect={handleFileSelect}
+  onAnalyzeResult={setResult}
+  selectedFile={selectedFile}
+/>
               
               {selectedFile && (
                 <div className="text-center">
@@ -151,11 +177,12 @@ export const Detect = () => {
           {analysisState === "complete" && analysisResult && (
             <div className="space-y-8">
               <AnalysisResult
-                score={analysisResult.score}
-                result={analysisResult.result}
-                explanation={analysisResult.explanation}
-                confidenceLevel={analysisResult.confidenceLevel}
-              />
+  score={analysisResult.score}
+  result={analysisResult.result}
+  explanation={analysisResult.explanation}
+  confidenceLevel={analysisResult.confidenceLevel}
+  heatmapUrl={analysisResult.heatmapUrl}
+/>
               
               <div className="text-center">
                 <Button variant="outline" onClick={handleReset}>

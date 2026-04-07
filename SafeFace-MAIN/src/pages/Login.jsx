@@ -19,7 +19,6 @@ function Login() {
       body: JSON.stringify({
         userId,
         password,
-        role,
       }),
     });
 
@@ -31,11 +30,14 @@ function Login() {
   localStorage.setItem("userId", data.userId);
   console.log("Saved userId:", data.userId);
 
-  if (role === "Admin") {
-    navigate("/admin");        // 👈 ADMIN GOES HERE
-  } else {
-    navigate("/Dashboard");   // 👈 USER GOES HERE
-  }
+  localStorage.setItem("userId", data.userId);
+localStorage.setItem("role", data.role);
+
+if (data.role === "Admin") {
+  navigate("/admin");
+} else {
+  navigate("/dashboard");
+}
 }
 
   };

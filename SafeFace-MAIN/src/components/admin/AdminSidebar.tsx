@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { User, FileText, Shield, File } from "lucide-react";
-import { cn } from "@/lib/utils";
+const cn = (...classes: any[]) => classes.filter(Boolean).join(" ");
 
 const sidebarLinks = [
   { href: "/admin", label: "Dashboard", icon: User },
