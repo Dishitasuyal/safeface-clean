@@ -17,12 +17,18 @@ from admin import get_dashboard_stats
 from admin_users import get_users, suspend_user, unsuspend_user
 from admin_moderation import router as moderation_router
 from db import db
-from model_loader import get_model
 from utils.predict_image import predict_image as run_image_prediction 
 from utils.predict_video import predict_video_mtcnn
 from utils.explain_image import generate_explanation
-from utils.video_results import get_video_result
+# from utils.video_results import get_video_result
 from datetime import datetime
+from model_loader import get_model
+from model_loader import get_video_model
+
+# tanisha made these changes(added the next 2 lines)
+from model_loader import get_video_model
+from utils.predict_video_model import predict_video_with_video_model
+
 # ✅ CORRECT
 from utils.predict_image import predict_image
 import tensorflow as tf
@@ -381,39 +387,79 @@ def predict_image_api():
         print("predict_image_api error:", e)
         return jsonify({"error": str(e)}), 500
     
+# @app.route("/predict-video", methods=["POST"])
+# def predict_video_api():
+#     try:
+#         if "file" not in request.files:
+#             return jsonify({"error": "No file uploaded"}), 400
+
+#         file = request.files["file"]
+#         if file.filename == "":
+#             return jsonify({"error": "No file selected"}), 400
+
+#         filename = secure_filename(file.filename)
+#         filepath = os.path.join(UPLOAD_FOLDER, filename)
+#         file.save(filepath)
+        
+
+#         print("Video saved at:", filepath)
+#         demo_result = get_video_result(filepath)
+#         if demo_result is not None:
+#             return jsonify(demo_result)
+#         model_instance = get_video_model()
+#         result = predict_video_mtcnn(model_instance, filepath)
+#         print("Video result:", result)
+
+#         if "error" in result:
+#             return jsonify(result), 400
+
+#         return jsonify(result)
+
+#     except Exception as e:   # ✅ THIS FIXES YOUR ERROR
+#         print("predict_video_api error:", e)
+#         return jsonify({"error": str(e)}), 500
 @app.route("/predict-video", methods=["POST"])
 def predict_video_api():
     try:
+        # 1. Check file
         if "file" not in request.files:
             return jsonify({"error": "No file uploaded"}), 400
 
         file = request.files["file"]
+
         if file.filename == "":
             return jsonify({"error": "No file selected"}), 400
 
+        # 2. Save file
         filename = secure_filename(file.filename)
         filepath = os.path.join(UPLOAD_FOLDER, filename)
         file.save(filepath)
-        
 
         print("Video saved at:", filepath)
-        demo_result = get_video_result(filepath)
-        if demo_result is not None:
-            return jsonify(demo_result)
-        model_instance = get_model()
-        result = predict_video_mtcnn(model_instance, filepath)
 
+        # # 3. Load model (weights-based)
+        # model_instance = get_video_model()
+
+        # # 4. Predict using NEW video model
+        # result = predict_video_with_video_model(model_instance, filepath)
+        try:
+            model_instance = get_video_model()
+        except Exception as e:
+            print("VIDEO MODEL LOAD FAILED:", e)
+            return jsonify({"error": "Video model failed to load"}), 500
+        result = predict_video_with_video_model(model_instance, filepath)
         print("Video result:", result)
 
+        # 5. Handle model errors
         if "error" in result:
             return jsonify(result), 400
 
+        # 6. Success response
         return jsonify(result)
 
-    except Exception as e:   # ✅ THIS FIXES YOUR ERROR
+    except Exception as e:
         print("predict_video_api error:", e)
         return jsonify({"error": str(e)}), 500
-    
 
 
 @app.route("/analyze", methods=["POST"])
