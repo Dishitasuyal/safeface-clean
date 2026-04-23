@@ -99,7 +99,7 @@ export const UploadBox = ({
         <input
           ref={fileInputRef}
           type="file"
-          accept=".mp4,.mov,.avi,.mpa,.png,.jpg,.jpeg,.gif"
+          accept=".mp4,.mov,.avi,.png,.jpg,.jpeg"
           onChange={handleFileChange}
           className="hidden"
           disabled={isDisabled}
@@ -167,12 +167,8 @@ export const UploadBox = ({
         <p className="text-sm font-medium text-foreground">Supported Formats:</p>
         <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
-            <FileVideo className="h-4 w-4 text-primary" />
-            <span>.mp4, .mov, .avi</span>
-          </div>
-          <div className="flex items-center gap-2">
             <ImageIcon className="h-4 w-4 text-primary" />
-            <span>.png, .jpg, .gif</span>
+            <span>.png, .jpg</span>
           </div>
         </div>
       </div>
