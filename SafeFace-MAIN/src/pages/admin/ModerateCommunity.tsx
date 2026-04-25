@@ -15,7 +15,7 @@ const ModerateCommunity = () => {
       const formatted = data.map((post: any) => ({
   id: post._id,   // ✅ IMPORTANT FIX
   content: post.content,
-  image: `http://localhost:5000/${post.filePath}`,
+  image: `https://safeface-clean-bl8z.onrender.com/${post.filePath}`,
   userId: post.userId,
 }));
 
