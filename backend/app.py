@@ -37,7 +37,7 @@ print("🔥 Flask backend starting...")
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-CORS(app)
+CORS(app, origins=["https://safeface-clean.vercel.app"])
 app.config['CORS_HEADERS'] = 'Content-Type'
 app.register_blueprint(moderation_router)
 @app.route("/")
