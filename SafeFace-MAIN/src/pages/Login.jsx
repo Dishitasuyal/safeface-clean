@@ -10,6 +10,7 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    console.log("LOGIN CLICKED");
 
     const response = await fetch("/api/login", {
       method: "POST",
