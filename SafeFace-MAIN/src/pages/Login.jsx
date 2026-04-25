@@ -11,7 +11,7 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    fetch("https://cors-anywhere.herokuapp.com/https://safeface-clean-bl8z.onrender.com/login", {
+    fetch("/api/login"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
