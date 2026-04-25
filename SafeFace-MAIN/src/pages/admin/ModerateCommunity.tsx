@@ -9,7 +9,7 @@ const ModerateCommunity = () => {
 
   const fetchPosts = async () => {
     try {
-      const res = await fetch("http://localhost:5000/admin/posts");
+      const res = await fetch("https://safeface-clean-bl8z.onrender.com/admin/posts");
       const data = await res.json();
       console.log(data);
       const formatted = data.map((post: any) => ({
@@ -31,7 +31,7 @@ const ModerateCommunity = () => {
 
   const handleApprove = async (id: string) => {
   try {
-    await fetch(`http://localhost:5000/admin/approve/${id}`, {
+    await fetch(`https://safeface-clean-bl8z.onrender.com/admin/approve/${id}`, {
       method: "PUT",
     });
 
@@ -48,7 +48,7 @@ const ModerateCommunity = () => {
   
 const handleReject = async (id: string) => {
   try {
-    await fetch(`http://localhost:5000/admin/reject/${id}`, {
+    await fetch(`https://safeface-clean-bl8z.onrender.com/admin/reject/${id}`, {
       method: "PUT",
     });
 
