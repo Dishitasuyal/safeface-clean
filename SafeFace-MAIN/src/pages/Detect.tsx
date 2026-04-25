@@ -55,11 +55,12 @@ const handleAnalyze = async () => {
     const formData = new FormData();
     formData.append("file", selectedFile);
 
-    const isVideo = selectedFile.type.startsWith("video/");
-    const endpoint = isVideo
-      ? "http://127.0.0.1:5000/predict-video"
-      : "http://127.0.0.1:5000/predict-image";
+    const endpoint = "https://safeface-clean-bl8z.onrender.com/predict-image";
 
+    if (selectedFile.type.startsWith("video/")) {
+    alert("Video analysis is currently not supported");
+    return;
+   }
     const res = await fetch(endpoint, {
       method: "POST",
       body: formData,
