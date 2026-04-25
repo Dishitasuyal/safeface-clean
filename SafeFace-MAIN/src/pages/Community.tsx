@@ -14,7 +14,7 @@ const Community = () => {
     const fetchPosts = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5000/community/posts"
+          "https://safeface-clean-bl8z.onrender.com/community/posts"
         );
         const data = await response.json();
         setPosts(data);
@@ -57,7 +57,7 @@ const Community = () => {
 
         // Refresh posts
         const updated = await fetch(
-          "http://localhost:5000/community/posts"
+          "https://safeface-clean-bl8z.onrender.com/community/posts"
         );
         const updatedData = await updated.json();
         setPosts(updatedData);
