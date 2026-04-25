@@ -7,7 +7,7 @@ function ForgotPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await fetch("http://127.0.0.1:5000/forgot-password", {
+    await fetch("https://safeface-clean-bl8z.onrender.com/forgot-password", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
