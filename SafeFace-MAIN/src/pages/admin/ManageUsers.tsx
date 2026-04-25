@@ -23,7 +23,7 @@ const ManageUsers = () => {
 
   // Fetch users from backend
   useEffect(() => {
-    fetch("http://localhost:5000/admin/users")
+    fetch("https://safeface-clean-bl8z.onrender.com/admin/users")
       .then((res) => res.json())
       .then((data) => setUsers(data))
       .catch((err) => console.error(err));
@@ -31,7 +31,7 @@ const ManageUsers = () => {
 
   // Suspend user
   const handleSuspend = async (userId: string) => {
-  await fetch(`http://localhost:5000/admin/suspend/${userId}`, {
+  await fetch(`https://safeface-clean-bl8z.onrender.com/admin/suspend/${userId}`, {
     method: "PUT"
   });
 
@@ -45,7 +45,7 @@ const ManageUsers = () => {
 
   // Unsuspend user
   const handleUnsuspend = async (userId: string) => {
-    await fetch(`http://localhost:5000/admin/users/unsuspend/${userId}`, {
+    await fetch(`https://safeface-clean-bl8z.onrender.com/admin/users/unsuspend/${userId}`, {
       method: "POST",
     });
 
@@ -63,7 +63,7 @@ const ManageUsers = () => {
 
   // Delete user
   const handleDelete = async (userId: string) => {
-    await fetch(`http://localhost:5000/admin/users/delete/${userId}`, {
+    await fetch(`https://safeface-clean-bl8z.onrender.com/admin/users/delete/${userId}`, {
       method: "DELETE",
     });
 
