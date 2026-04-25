@@ -30,7 +30,7 @@ useEffect(() => {
   }
 
   // ✅ If admin → fetch data
-  fetch("http://localhost:5000/admin/stats")
+  fetch("https://safeface-clean-bl8z.onrender.com/admin/stats")
     .then(res => res.json())
     .then(data => setStats(data))
     .catch(err => console.error(err));
