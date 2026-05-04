@@ -1,34 +1,32 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-from werkzeug.security import check_password_hash
-from db import users_col, logins_col
 from werkzeug.security import generate_password_hash, check_password_hash
-import secrets
-from datetime import datetime, timedelta
-import smtplib
-import uuid
-from gmail_service import send_reset_email
-from db import community_col
 from werkzeug.utils import secure_filename
+
+# ✅ FIXED IMPORTS
+from backend.db import users_col, logins_col, community_col, db
+from backend.gmail_service import send_reset_email   # ⚠️ FIX THIS TOO
+from backend.model_loader import get_model           # ⚠️ FIX THIS
+from backend.admin import get_dashboard_stats        # ⚠️ FIX THIS
+from backend.admin_users import get_users, suspend_user, unsuspend_user
+from backend.admin_moderation import router as moderation_router
+
+# utils
+from backend.utils.predict_image import predict_image
+from backend.utils.explain_image import generate_explanation
+
+
+# others
+import secrets
+import uuid
+import smtplib
 import os
-from bson import ObjectId
-from flask import send_from_directory
-from admin import get_dashboard_stats
-from admin_users import get_users, suspend_user, unsuspend_user
-from admin_moderation import router as moderation_router
-from db import db
-from model_loader import get_model
-from utils.predict_image import predict_image as run_image_prediction 
-from utils.predict_video import predict_video_mtcnn
-from utils.explain_image import generate_explanation
-from utils.video_results import get_video_result
-from datetime import datetime
-# ✅ CORRECT
-from utils.predict_image import predict_image
+import sys
 import tensorflow as tf
 import numpy as np
 import cv2
-import sys
+from bson import ObjectId
+from datetime import datetime, timedelta
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
@@ -383,38 +381,6 @@ def predict_image_api():
         print("predict_image_api error:", e)
         return jsonify({"error": str(e)}), 500
     
-@app.route("/predict-video", methods=["POST"])
-def predict_video_api():
-    try:
-        if "file" not in request.files:
-            return jsonify({"error": "No file uploaded"}), 400
-
-        file = request.files["file"]
-        if file.filename == "":
-            return jsonify({"error": "No file selected"}), 400
-
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(UPLOAD_FOLDER, filename)
-        file.save(filepath)
-        
-
-        print("Video saved at:", filepath)
-        demo_result = get_video_result(filepath)
-        if demo_result is not None:
-            return jsonify(demo_result)
-        model_instance = get_model()
-        result = predict_video_mtcnn(model_instance, filepath)
-
-        print("Video result:", result)
-
-        if "error" in result:
-            return jsonify(result), 400
-
-        return jsonify(result)
-
-    except Exception as e:   # ✅ THIS FIXES YOUR ERROR
-        print("predict_video_api error:", e)
-        return jsonify({"error": str(e)}), 500
     
 
 
