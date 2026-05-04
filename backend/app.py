@@ -86,51 +86,50 @@ def register():
 # ---------------- LOGIN ----------------
 @app.route("/login", methods=["POST"])
 def login():
-    print("LOGIN API CALLED") 
-    
-    
-    data = request.json
+    try:
+        print("LOGIN API CALLED") 
+        
+        data = request.json
+        userId = data.get("userId")
+        password = data.get("password")        
 
-    userId = data.get("userId")
-    password = data.get("password")
+        # ✅ Step 1: validate input
+        if not userId or not password:
+            return jsonify({"message": "userId and password required"}), 400
 
-    # ✅ Step 1: validate input
-    if not userId or not password:
-        return jsonify({"message": "userId and password required"}), 400
+        # ✅ Step 2: find user
+        user = users_col.find_one({"userId": userId})
 
-    # ✅ Step 2: find user
-    user = users_col.find_one({"userId": userId})
+        if not user:
+            return jsonify({"message": "User not found"}), 401
 
-    if not user:
-        return jsonify({"message": "User not found"}), 401
+        # ✅ Step 3: check password
+        if not check_password_hash(user["password"], password):
+            return jsonify({"message": "Invalid password"}), 401
 
-    # ✅ Step 3: check password
-    if not check_password_hash(user["password"], password):
-        return jsonify({"message": "Invalid password"}), 401
+        # ✅ Step 4: suspended check
+        if user.get("status") == "suspended":
+            return jsonify({"error": "Account suspended"}), 403
 
-    # ✅ Step 4: suspended check
-    if user.get("status") == "suspended":
-        return jsonify({"error": "Account suspended"}), 403
-
-     # ⭐ ADD HERE
-    if userId == "dishita.suyal2004":
-        role = "Admin"
-    else:
-        role = "user"
+        # ⭐ role logic
+        if userId == "dishita.suyal2004":
+            role = "Admin"
+        else:
+            role = "user"
 
         logins_col.insert_one({
-        "userId": userId,
-        "role": role
-    })
+            "userId": userId,
+            "role": role
+        })
 
-    return jsonify({
-        "message": "login successful",
-        "userId": userId,
-        "role": role
-    }), 200
+        return jsonify({
+            "message": "login successful",
+            "userId": userId,
+            "role": role
+        }), 200
 
- except Exception as e:
-        print("ERROR IN LOGIN:", str(e))   # 👈 VERY IMPORTANT
+    except Exception as e:   ✅ CORRECT POSITION
+        print("ERROR IN LOGIN:", str(e))
         return jsonify({"error": str(e)}), 500
 
 #---------PASSWORD-----------
