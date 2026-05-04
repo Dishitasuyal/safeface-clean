@@ -137,7 +137,7 @@ def login():
 @app.route("/forgot-password", methods=["POST"])
 def forgot_password():
     data = request.json
-    email = data.get("email")   # ✅ DEFINE email
+    email = data.get("email")   
 
     if not email:
         return jsonify({"error": "Email is required"}), 400
@@ -148,7 +148,7 @@ def forgot_password():
 
     token = str(uuid.uuid4())   # ✅ DEFINE token
 
-    # ✅ SAVE TOKEN + EXPIRY
+
     users_col.update_one(
         {"email": email},
         {
@@ -239,7 +239,7 @@ def create_post():
         "userId": userId,
         "content": content,
         "filePath": f"uploads/{filename}",
-        "fileType": "Image",  # ✅ FIXED
+        "fileType": "Image",  
         "status": "pending",
         "createdAt": datetime.utcnow()
     }
@@ -368,7 +368,7 @@ def predict_image_api():
         if "error" in result:
             return jsonify(result), 400
 
-        # Explainability only for fake images
+
         if result.get("result") == "FAKE":
             exp = generate_explanation(model_instance, filepath, UPLOAD_FOLDER)
 
@@ -423,7 +423,7 @@ def predict_video_api():
 @app.route("/analyze", methods=["POST"])
 def analyze():
     try:
-        # ✅ Step 0: Validate file
+  
         if "file" not in request.files:
             return jsonify({"error": "No file uploaded"}), 400
 
@@ -433,10 +433,10 @@ def analyze():
         if not userId:
             return jsonify({"error": "userId missing"}), 400
 
-        # ✅ Step 1: Save media entry
+
         media_doc = {
             "userId": userId,
-            "fileType": "Image",  # can improve later
+            "fileType": "Image",  
             "createdAt": datetime.utcnow()
         }
 

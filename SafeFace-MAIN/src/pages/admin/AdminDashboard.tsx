@@ -1,7 +1,7 @@
 import { Target, FileText, CheckCircle } from "lucide-react";
 import { useEffect, useState } from "react";
-import AdminLayout from "@/components/admin/AdminLayout";
-import StatCard from "@/components/admin/StatCard";
+import AdminLayout from "../../components/admin/AdminLayout";
+import StatCard from "../../components/admin/StatCard";
 import { useNavigate } from "react-router-dom";
 
 const AdminDashboard = () => {

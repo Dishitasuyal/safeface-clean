@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { X, AlertTriangle, Shield, Calendar, User } from "lucide-react";
-import { CommunityPost } from "@/data/mockCommunityPosts";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { CommunityPost } from "../data/mockCommunityPosts";
+import { Badge } from "../components/ui/badge";
+import { Button } from "../components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+} from "../components/ui/dialog";
+import { Alert, AlertDescription } from "../components/ui/alert";
 
 interface CommunityModalProps {
   post: CommunityPost | null;

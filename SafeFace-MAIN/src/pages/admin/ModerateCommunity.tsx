@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import AdminLayout from "@/components/admin/AdminLayout";
-import ModerationCard from "@/components/admin/ModerationCard";
-import { useToast } from "@/hooks/use-toast";
+import AdminLayout from "../../components/admin/AdminLayout";
+import ModerationCard from "../../components/admin/ModerationCard";
+import { useToast } from "../../hooks/use-toast";
 
 const ModerateCommunity = () => {
   const [posts, setPosts] = useState<any[]>([]);

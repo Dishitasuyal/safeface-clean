@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import Navbar from "@/components/Navbar";
-import CommunityCard from "@/components/CommunityCard";
-import EmptyState from "@/components/EmptyState";
+import Navbar from "../components/Navbar";
+import CommunityCard from "../components/CommunityCard";
+import EmptyState from "../components/EmptyState";
 
 const Community = () => {
   const [posts, setPosts] = useState<any[]>([]);

@@ -1,8 +1,8 @@
 import { Scale, Phone, FileText, Shield, AlertCircle, ExternalLink, CheckCircle } from "lucide-react";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import { Disclaimer } from "@/components/Disclaimer";
+import { Navbar } from "../components/Navbar";
+import { Footer } from "../components/Footer";
+import { Button } from "../components/ui/button";
+import { Disclaimer } from "../components/Disclaimer";
 
 const legalResources = [
   {

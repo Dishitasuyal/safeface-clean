@@ -10,7 +10,7 @@ interface UploadBoxProps {
 
 export const UploadBox = ({
   onFileSelect,
-  onAnalyzeResult,   // ✅ ADD THIS
+  onAnalyzeResult,  
   selectedFile,
   isDisabled
 }: UploadBoxProps) => {
@@ -74,8 +74,6 @@ export const UploadBox = ({
 
     onAnalyzeResult(data);
        
-    // ❌ REMOVE THIS PART
-    // onFileSelect({ ... });
 
   } catch (err) {
     console.error(err);
