@@ -14,6 +14,8 @@ from backend.admin_moderation import router as moderation_router
 # utils
 from backend.utils.predict_image import predict_image
 from backend.utils.explain_image import generate_explanation
+from backend.utils.explain_image import generate_explanation
+
 
 
 # others
