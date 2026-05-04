@@ -128,10 +128,9 @@ def login():
             "role": role
         }), 200
 
-    except Exception as e:   ✅ CORRECT POSITION
+    except Exception as e:   
         print("ERROR IN LOGIN:", str(e))
         return jsonify({"error": str(e)}), 500
-
 #---------PASSWORD-----------
 @app.route("/forgot-password", methods=["POST"])
 def forgot_password():
