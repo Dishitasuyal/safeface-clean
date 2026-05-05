@@ -9,6 +9,8 @@ from model_loader import get_model
 from admin import get_dashboard_stats
 from admin_users import get_users, suspend_user, unsuspend_user
 from admin_moderation import router as moderation_router
+from pymongo.collection import Collection
+users_collection: Collection
 
 # utils
 from utils.predict_image import predict_image
@@ -35,6 +37,10 @@ print("🔥 Flask backend starting...")
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+client = MongoClient(MONGO_URI)
+db = client["safefaceDB"]
+users_collection = db["users"]
 
 CORS(app, resources={r"/*": {"origins": "*"}})
 @app.after_request
@@ -139,11 +145,7 @@ def login():
         if user.get("status") == "suspended":
             return jsonify({"error": "Account suspended"}), 403
 
-        # ⭐ role logic
-        if userId == "dishita.suyal2004":
-            role = "Admin"
-        else:
-            role = "user"
+        role = user.get("role", "user")
 
         logins_col.insert_one({
             "userId": userId,
@@ -152,8 +154,8 @@ def login():
 
         return jsonify({
             "message": "login successful",
-            "userId": userId,
-            "role": role
+            "userId": user["userId"],
+            "role": user.get("role", "user")
         }), 200
 
     except Exception as e:   
@@ -479,7 +481,17 @@ def store_result():
 
     except Exception as e:
         return {"error": str(e)}, 500
-    
+
+@app.route("/admin-data", methods=["GET"])
+def admin_data():
+    userId = request.headers.get("userId")
+
+    user = users_collection.find_one({"userId": userId})
+
+    if not user or user.get("role") != "admin":
+        return jsonify({"error": "Unauthorized"}), 403
+
+    return jsonify({"message": "Welcome Admin"})   
 
 
 
