@@ -23,6 +23,8 @@ function Register() {
   const handleSubmit = async (e) => {
   e.preventDefault();
 
+  console.log("SENDING DATA:", formData);
+
  
   // ✅ Password strength check
   if (!isStrongPassword(formData.password)) {
