@@ -48,6 +48,11 @@ app.register_blueprint(moderation_router)
 @app.route("/")
 def home():
     return "Backend is running"
+from flask import send_from_directory
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename)
 
 # model = None
 
@@ -396,7 +401,9 @@ def predict_image_api():
         if result.get("result") == "FAKE":
             exp = generate_explanation(model_instance, filepath, UPLOAD_FOLDER)
 
-            result["heatmap_url"] = f"http://127.0.0.1:5000/uploads/{exp['heatmap_filename']}"
+            BASE_URL = "https://safeface-clean-bl8z.onrender.com"
+
+            result["heatmap_url"] = f"{BASE_URL}/uploads/{exp['heatmap_filename']}"
             result["regions"] = exp["regions"]
             result["explanation"] = (
                 f"The model detected suspicious patterns around the {', '.join(exp['regions'])}. "
