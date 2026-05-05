@@ -387,7 +387,7 @@ def predict_image_api():
         file.save(filepath)
 
         model_instance = get_model()
-        result = run_image_prediction(model_instance, filepath)
+        result = predict_image(model_instance, filepath)
 
         if "error" in result:
             return jsonify(result), 400
