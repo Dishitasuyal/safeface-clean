@@ -58,7 +58,7 @@ export const UploadBox = ({
   };
 
 
-  const handleUpload = async (file) => {
+  const handleUpload = async (file: File) => {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("userId", localStorage.getItem("userId") || "");
@@ -69,14 +69,19 @@ export const UploadBox = ({
       body: formData,
     });
 
+    if (!res.ok) {
+      throw new Error("Server error");
+    }
+
     const data = await res.json();
     console.log("Backend result:", data);
 
-    onAnalyzeResult(data);
-       
+    // ✅ send only result
+    onAnalyzeResult(`${data.result} (${data.confidence}%)`);
 
   } catch (err) {
-    console.error(err);
+    console.error("Upload error:", err);
+    onAnalyzeResult("Error analyzing image ❌");
   }
 };
 
