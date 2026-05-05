@@ -59,10 +59,19 @@ def home():
 def register():
     data = request.json
 
+    userId = data.get("userId")
+    email = data.get("email")
+    password = data.get("password")
+    userName = data.get("userName")
+    contactNumber = data.get("contactNumber")
+
+    if not all([userId, email, password, userName, contactNumber]):
+        return jsonify({"message": "Missing fields"}), 400
+
     existing_user = users_col.find_one({
         "$or": [
-            {"userId": data["userId"]},
-            {"email": data["email"]}
+            {"userId": userId},
+            {"email": email}
         ]
     })
 
@@ -70,13 +79,12 @@ def register():
         return jsonify({"message": "User already exists"}), 409
 
     users_col.insert_one({
-        "userId": data["userId"],
-        "email": data["email"],
-       "password": generate_password_hash(data["password"]),
-        "userName": data["userName"],
-        "contactNumber": data["contactNumber"],
+        "userId": userId,
+        "email": email,
+        "password": generate_password_hash(password),
+        "userName": userName,
+        "contactNumber": contactNumber,
         "status": "active"
-        
     })
 
     return jsonify({"message": "Registration successful"}), 201
