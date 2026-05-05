@@ -35,7 +35,8 @@ print("🔥 Flask backend starting...")
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-CORS(app, resources={r"/*": {"origins": "https://safeface-clean.vercel.app"}})
+
+CORS(app, resources={r"/*": {"origins": "*"}})
 @app.after_request
 def after_request(response):
     response.headers.add("Access-Control-Allow-Origin", "*")
@@ -63,37 +64,50 @@ def home():
 # ---------------- REGISTER ----------------
 @app.route("/register", methods=["POST"])
 def register():
-    data = request.json
+    try:
+        data = request.json
+        print("RECEIVED DATA:", data)
 
-    userId = data.get("userId")
-    email = data.get("email")
-    password = data.get("password")
-    userName = data.get("userName")
-    contactNumber = data.get("contactNumber")
+        userId = data.get("userId")
+        email = data.get("email")
+        password = data.get("password")
+        userName = data.get("userName")
+        contactNumber = data.get("contactNumber")
 
-    if not all([userId, email, password, userName, contactNumber]):
-        return jsonify({"message": "Missing fields"}), 400
+        print(userId, email, password, userName, contactNumber)
 
-    existing_user = users_col.find_one({
-        "$or": [
-            {"userId": userId},
-            {"email": email}
-        ]
-    })
+        if not all([userId, email, password, userName, contactNumber]):
+            return jsonify({"message": "Missing fields"}), 400
 
-    if existing_user:
-        return jsonify({"message": "User already exists"}), 409
+        existing_user = users_col.find_one({
+            "$or": [
+                {"userId": userId},
+                {"email": email}
+            ]
+        })
 
-    users_col.insert_one({
-        "userId": userId,
-        "email": email,
-        "password": generate_password_hash(password),
-        "userName": userName,
-        "contactNumber": contactNumber,
-        "status": "active"
-    })
+        if existing_user:
+            return jsonify({"message": "User already exists"}), 409
 
-    return jsonify({"message": "Registration successful"}), 201
+        print("Hashing password...")
+        hashed_password = generate_password_hash(password)
+
+        print("Inserting into DB...")
+        users_col.insert_one({
+            "userId": userId,
+            "email": email,
+            "password": hashed_password,
+            "userName": userName,
+            "contactNumber": contactNumber,
+            "status": "active"
+        })
+
+        print("SUCCESS")
+        return jsonify({"message": "Registration successful"}), 201
+
+    except Exception as e:
+        print("ERROR:", str(e))
+        return jsonify({"message": "Server error"}), 500
 
 # ---------------- LOGIN ----------------
 @app.route("/login", methods=["POST"])
