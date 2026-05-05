@@ -35,7 +35,13 @@ print("🔥 Flask backend starting...")
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "https://safeface-clean.vercel.app"}})
+@app.after_request
+def after_request(response):
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
+    response.headers.add("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
+    return response
 app.config['CORS_HEADERS'] = 'Content-Type'
 app.register_blueprint(moderation_router)
 @app.route("/")
