@@ -45,11 +45,11 @@ function Register() {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      userId: formData.username,
-      email: formData.email,
-      password: formData.password,
-      userName: formData.name,
-      contactNumber: formData.contactNumber
+     userId: formData.userId,
+     email: formData.email,
+     password: formData.password,
+     userName: formData.userName,
+     contactNumber: formData.contactNumber
     }),
   });
 
@@ -68,12 +68,12 @@ function Register() {
   console.error(error);
 }
 
-  const isStrongPassword = (password) => {
+}
+
+const isStrongPassword = (password) => {
   const uppercaseRegex = /[A-Z]/;
   const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
-
   return uppercaseRegex.test(password) && specialCharRegex.test(password);
- }
 };
 
 const isValidContactNumber = (contact) => {
@@ -105,8 +105,8 @@ const isValidContactNumber = (contact) => {
           name="email"
           placeholder="Email ID"
           onChange={handleChange}
-          pattern="^[a-zA-Z0-9._%+-]+@(gmail\.com|yahoo\.com)$"
-         title="Only Gmail or Yahoo email addresses are allowed"
+          pattern="^[a-zA-Z0-9._%+]+@(gmail\.com|yahoo\.com)$"
+          title="Only Gmail or Yahoo email addresses are allowed"
           required
         />
 
