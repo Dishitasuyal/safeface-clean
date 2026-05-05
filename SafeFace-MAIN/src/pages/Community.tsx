@@ -40,7 +40,7 @@ const Community = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/community/create",
+        "https://safeface-clean-bl8z.onrender.com/community/create",
         {
           method: "POST",
           body: formData,
