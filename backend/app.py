@@ -35,7 +35,7 @@ print("🔥 Flask backend starting...")
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-CORS(app, origins=["https://safeface-clean.vercel.app"])
+CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 app.register_blueprint(moderation_router)
 @app.route("/")
@@ -427,10 +427,10 @@ def analyze():
         db["deepfake_analysis"].insert_one(analysis_doc)
 
         return jsonify({
-            "result": analysis_result,
-            "confidence": float(prediction)
+         "result": f"{analysis_result} {'❌' if analysis_result=='FAKE' else '✅'}",
+         "confidence": round(float(prediction) * 100, 2)
         })
-
+    
     except Exception as e:
         print("Analyze error:", e)
         return jsonify({"error": str(e)}), 500
