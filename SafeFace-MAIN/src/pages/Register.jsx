@@ -38,28 +38,42 @@ function Register() {
     return;
   }
 
-  try {
-    const response = await fetch("https://safeface-clean-bl8z.onrender.com/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
+ try {
+  const response = await fetch("https://safeface-clean-bl8z.onrender.com/register", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      userId: formData.username,
+      email: formData.email,
+      password: formData.password,
+      userName: formData.name,
+      contactNumber: formData.contactNumber
+    }),
+  });
 
-    const data = await response.json();
-    alert(data.message);
-  } catch (error) {
-    alert("Error connecting to backend");
-    console.error(error);
+  if (!response.ok) {
+    const text = await response.text();
+    console.error("Register error:", text);
+    alert("Registration failed");
+    return;
   }
-};
+
+  const data = await response.json();
+  alert(data.message);
+
+} catch (error) {
+  alert("Error connecting to backend");
+  console.error(error);
+}
 
   const isStrongPassword = (password) => {
   const uppercaseRegex = /[A-Z]/;
   const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
 
   return uppercaseRegex.test(password) && specialCharRegex.test(password);
+ }
 };
 
 const isValidContactNumber = (contact) => {
