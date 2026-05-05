@@ -12,7 +12,7 @@ function Login() {
     e.preventDefault();
     console.log("LOGIN CLICKED");
 
-    const response = await fetch("/api/login", {
+    const response = await fetch("https://safeface-clean-bl8z.onrender.com/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
