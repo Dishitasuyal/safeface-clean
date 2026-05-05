@@ -3,18 +3,16 @@ from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
-# ✅ FIXED IMPORTS
-from backend.db import users_col, logins_col, community_col, db
-from backend.gmail_service import send_reset_email   # ⚠️ FIX THIS TOO
-from backend.model_loader import get_model           # ⚠️ FIX THIS
-from backend.admin import get_dashboard_stats        # ⚠️ FIX THIS
-from backend.admin_users import get_users, suspend_user, unsuspend_user
-from backend.admin_moderation import router as moderation_router
+from db import users_col, logins_col, community_col, db
+from gmail_service import send_reset_email
+from model_loader import get_model
+from admin import get_dashboard_stats
+from admin_users import get_users, suspend_user, unsuspend_user
+from admin_moderation import router as moderation_router
 
 # utils
-from backend.utils.predict_image import predict_image
-from backend.utils.explain_image import generate_explanation
-from backend.utils.explain_image import generate_explanation
+from utils.predict_image import predict_image
+from utils.explain_image import generate_explanation
 
 
 
@@ -438,5 +436,8 @@ def analyze():
         return jsonify({"error": str(e)}), 500
     
 
-if __name__ == '__main__':
-    app.run(debug=True)
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
