@@ -24,7 +24,7 @@ useEffect(() => {
   }
 
   // 🔐 Not admin
-  if (role !== "Admin") {
+  if (role !== "admin") {
     navigate("/dashboard");
     return;
   }
