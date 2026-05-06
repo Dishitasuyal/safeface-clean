@@ -11,6 +11,7 @@ from admin_users import get_users, suspend_user, unsuspend_user
 from admin_moderation import router as moderation_router
 from pymongo.collection import Collection
 users_collection: Collection
+import os
 from pymongo import MongoClient
 
 # utils
@@ -23,7 +24,7 @@ from utils.explain_image import generate_explanation
 import secrets
 import uuid
 import smtplib
-import os
+
 import sys
 import tensorflow as tf
 import numpy as np
@@ -38,7 +39,7 @@ print("🔥 Flask backend starting...")
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
+MONGO_URI = os.environ.get("MONGO_URI")
 client = MongoClient(MONGO_URI)
 db = client["safefaceDB"]
 users_collection = db["users"]
