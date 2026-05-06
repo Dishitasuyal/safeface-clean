@@ -30,7 +30,9 @@ function Login() {
 localStorage.setItem("userId", data.userId);
 localStorage.setItem("role", data.role);
 
-if (data.role === "admin") {
+const adminUsers = ["Dish2004"];
+
+if (adminUsers.includes(data.userId)) {
   navigate("/admin");
 } else {
   navigate("/dashboard");

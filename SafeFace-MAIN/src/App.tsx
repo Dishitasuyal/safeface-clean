@@ -25,6 +25,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <BrowserRouter>
         <Routes>
           <Route path="/" element={<Register />} />
           <Route path="/Register" element={<Register />} />
@@ -46,6 +47,7 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );
