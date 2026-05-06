@@ -5,7 +5,6 @@ import "../Login.css";
 function Login() {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -64,16 +63,6 @@ if (data.role === "admin") {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            required
-          >
-            <option value="">Select Role</option>
-            <option value="User">User</option>
-            <option value="Admin">Admin</option>
-          </select>
 
           <button type="submit" className="auth-button">
             Log In

@@ -149,11 +149,6 @@ def login():
 
         role = user.get("role", "user")
 
-        logins_col.insert_one({
-            "userId": userId,
-            "role": role
-        })
-
         return jsonify({
             "message": "login successful",
             "userId": user["userId"],
