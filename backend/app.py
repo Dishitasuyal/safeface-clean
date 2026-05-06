@@ -42,7 +42,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 MONGO_URI = os.environ.get("MONGO_URI")
 client = MongoClient(MONGO_URI)
 db = client["safefaceDB"]
-users_collection = db["users"]
+users_col = db["users"]
 
 CORS(app, resources={r"/*": {"origins": "*"}})
 @app.after_request
