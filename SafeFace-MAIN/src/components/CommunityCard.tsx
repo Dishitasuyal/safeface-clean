@@ -34,7 +34,7 @@ return (
 
       {post.filePath ? (
         <img
-          src={`http://localhost:5000/${post.filePath}`}
+          src={`https://safeface-clean-bl8z.onrender.com/${post.filePath}`}
           alt="post"
           className="w-full rounded-lg cursor-pointer"
           onClick={() => setIsOpen(true)}
@@ -58,7 +58,7 @@ return (
 
     {post.filePath && (
       <img
-        src={`http://localhost:5000/${post.filePath}`}
+        src={`https://safeface-clean-bl8z.onrender.com/${post.filePath}`}
         className="max-w-[90%] max-h-[90%] rounded-lg"
         onClick={(e) => e.stopPropagation()}
       />

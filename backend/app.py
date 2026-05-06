@@ -40,6 +40,7 @@ app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+
 CORS(app, resources={r"/*": {"origins": "*"}})
 @app.after_request
 def after_request(response):
@@ -260,7 +261,10 @@ def create_post():
         return jsonify({"error": "Only PNG and JPG images are allowed"}), 400
 
     filename = secure_filename(file.filename)
-    file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+    file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+    file.save(file_path)
+
+    print("FILE SAVED AT:", file_path)
 
     post = {
         "userId": userId,

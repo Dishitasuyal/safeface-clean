@@ -17,7 +17,12 @@ const Community = () => {
           "https://safeface-clean-bl8z.onrender.com/community/posts"
         );
         const data = await response.json();
-        setPosts(data);
+        const formatted = data.map((post: any) => ({
+          ...post,
+          image: `https://safeface-clean-bl8z.onrender.com/${post.filePath}`,
+         }));
+
+setPosts(formatted);
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
