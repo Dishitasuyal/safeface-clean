@@ -106,6 +106,7 @@ def register():
             "userName": userName,
             "contactNumber": contactNumber,
             "status": "active"
+            "role": "user" 
         })
 
         print("SUCCESS")
@@ -145,9 +146,8 @@ def login():
         if userId == "Dish2004":
          role = "admin"
         else:
-         if "role" not in user:
-          return jsonify({"message": "User role missing in DB"}), 500
-         role = user["role"]
+         role = user.get("role", "user")
+        
 
         print("FINAL ROLE:", role)
 
