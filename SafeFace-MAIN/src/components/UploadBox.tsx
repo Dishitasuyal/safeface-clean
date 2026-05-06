@@ -168,14 +168,10 @@ export const UploadBox = ({
       {/* Supported Formats */}
       <div className="space-y-2">
         <p className="text-sm font-medium text-foreground">Supported Formats:</p>
-        <div className="flex items-center gap-2">
-  <FileVideo className="h-4 w-4 text-primary" />
-  <span>.mp4, .mov, .avi</span>
-</div>
         <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <ImageIcon className="h-4 w-4 text-primary" />
-            <span>.png, .jpg</span>
+            <span>.png, .jpg, .jpeg</span>
           </div>
         </div>
       </div>
