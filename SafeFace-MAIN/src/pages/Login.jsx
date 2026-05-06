@@ -28,13 +28,10 @@ function Login() {
     if (response.ok) {
   alert("Login successful");
 
-  localStorage.setItem("userId", data.userId);
-  console.log("Saved userId:", data.userId);
-
-  localStorage.setItem("userId", data.userId);
+localStorage.setItem("userId", data.userId);
 localStorage.setItem("role", data.role);
 
-if (data.role === "Admin") {
+if (data.role === "admin") {
   navigate("/admin");
 } else {
   navigate("/dashboard");
