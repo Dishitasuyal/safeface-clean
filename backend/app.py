@@ -105,7 +105,7 @@ def register():
             "password": hashed_password,
             "userName": userName,
             "contactNumber": contactNumber,
-            "status": "active"
+            "status": "active",
             "role": "user" 
         })
 
