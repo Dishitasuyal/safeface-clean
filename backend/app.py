@@ -39,7 +39,6 @@ print("🔥 Flask backend starting...")
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-MONGO_URI = os.environ.get("MONGO_URI")
 
 CORS(app, resources={r"/*": {"origins": "*"}})
 @app.after_request
