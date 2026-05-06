@@ -119,39 +119,42 @@ def register():
 @app.route("/login", methods=["POST"])
 def login():
     try:
-        print("LOGIN API CALLED") 
-        
+        print("LOGIN API CALLED")
+
         data = request.json
         userId = data.get("userId")
-        password = data.get("password")        
+        password = data.get("password")
 
-        # ✅ Step 1: validate input
         if not userId or not password:
             return jsonify({"message": "userId and password required"}), 400
 
-        # ✅ Step 2: find user
+        # 🔍 Find user
         user = users_col.find_one({"userId": userId})
 
-        if not user:
-            return jsonify({"message": "User not found"}), 401
+        print("USER FROM DB:", user)  # ✅ DEBUG LINE
 
-        # ✅ Step 3: check password
+        if not user:
+            return jsonify({"message": "User not found"}), 404
+
+        # 🔐 Check password
         if not check_password_hash(user["password"], password):
             return jsonify({"message": "Invalid password"}), 401
 
-        # ✅ Step 4: suspended check
-        if user.get("status") == "suspended":
-            return jsonify({"error": "Account suspended"}), 403
+        # 🚨 IMPORTANT: NO DEFAULT VALUE HERE
+        if "role" not in user:
+            return jsonify({"message": "User role missing in DB"}), 500
 
-        role = user.get("role", "user")
+        role = user["role"]
+
+        print("FINAL ROLE:", role)  # ✅ DEBUG
 
         return jsonify({
             "message": "login successful",
             "userId": user["userId"],
-            "role": user.get("role", "user")
+            "role": role
         }), 200
 
-    except Exception as e:   
+    except Exception as e:
         print("ERROR IN LOGIN:", str(e))
         return jsonify({"error": str(e)}), 500
 #---------PASSWORD-----------
