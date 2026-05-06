@@ -23,7 +23,7 @@ function Login() {
     });
 
     const data = await response.json();
-
+    console.log("FULL RESPONSE:", data);
     if (response.ok) {
   alert("Login successful");
 
