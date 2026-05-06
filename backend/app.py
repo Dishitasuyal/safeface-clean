@@ -11,6 +11,7 @@ from admin_users import get_users, suspend_user, unsuspend_user
 from admin_moderation import router as moderation_router
 from pymongo.collection import Collection
 users_collection: Collection
+from pymongo import MongoClient
 
 # utils
 from utils.predict_image import predict_image
